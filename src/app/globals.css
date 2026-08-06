@@ -1,26 +1,98 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Shop floor (page ground) */
+  --color-shop: #16181b;
+  --color-shop-deep: #0b0c0e;
+
+  /* Blueprint plates (spec sheets, plaques) */
+  --color-blue: #1d3f5c;
+  --color-blue-deep: #14324a;
+  --color-blue-line: rgba(234, 243, 247, 0.14);
+
+  /* Text printed on blueprint plates */
+  --color-paper: #eaf3f7;
+  --color-paper-dim: rgba(234, 243, 247, 0.65);
+
+  /* Text printed directly on the shop floor */
+  --color-steel: #e7e9ea;
+  --color-steel-dim: rgba(231, 233, 234, 0.58);
+
+  /* Safety-orange accent: stamps, CTAs, active state */
+  --color-accent: #d9622c;
+  --color-accent-bright: #ef7a41;
+  --color-accent-dim: rgba(217, 98, 44, 0.35);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-shop: var(--color-shop);
+  --color-shop-deep: var(--color-shop-deep);
+  --color-blue: var(--color-blue);
+  --color-blue-deep: var(--color-blue-deep);
+  --color-blue-line: var(--color-blue-line);
+  --color-paper: var(--color-paper);
+  --color-paper-dim: var(--color-paper-dim);
+  --color-steel: var(--color-steel);
+  --color-steel-dim: var(--color-steel-dim);
+  --color-accent: var(--color-accent);
+  --color-accent-bright: var(--color-accent-bright);
+  --color-accent-dim: var(--color-accent-dim);
+
+  --font-display: var(--font-display);
+  --font-label: var(--font-label);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-label), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-shop-deep);
+}
+
+/* Faint machined grain on the shop floor */
+.shop-texture {
+  background-image:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(234, 243, 247, 0.035),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(234, 243, 247, 0.025),
+      transparent 40%
+    );
+}
+
+/* Graph-paper grid on blueprint plates */
+.blueprint-grid {
+  background-image:
+    linear-gradient(var(--color-blue-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-blue-line) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.accent-rule {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-accent),
+    var(--color-accent) 6px,
+    transparent 6px,
+    transparent 11px
+  );
+}
+
+.stamp {
+  transform: rotate(-3deg);
 }
