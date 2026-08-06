@@ -31,13 +31,13 @@ export function Specification() {
             <div className="mt-10 grid sm:grid-cols-2 gap-4">
               <div className="bg-blue blueprint-grid text-paper px-6 py-5 border border-blue-line">
                 <p className="font-label text-[0.6rem] tracking-[0.25em] uppercase text-paper-dim mb-2">
-                  Prior Service
+                  Current Post
                 </p>
                 <p className="font-display text-lg leading-snug">
-                  {experience.role}
+                  {experience[0].title}
                 </p>
                 <p className="font-label text-sm text-paper-dim mt-1">
-                  {experience.org}
+                  {experience[0].org}
                 </p>
               </div>
               <div className="bg-blue blueprint-grid text-paper px-6 py-5 border border-blue-line">
@@ -45,10 +45,10 @@ export function Specification() {
                   Configuration
                 </p>
                 <p className="font-display text-lg leading-snug">
-                  Full-stack, backend-capable
+                  Backend-led, full-stack capable
                 </p>
                 <p className="font-label text-sm text-paper-dim mt-1">
-                  React/Next.js · NestJS · .NET
+                  C# · ASP.NET Core · EF Core · Angular/Node.js
                 </p>
               </div>
             </div>
@@ -60,6 +60,48 @@ export function Specification() {
             >
               File a service request
             </a>
+          </div>
+        </div>
+
+        <div className="mt-16 md:mt-20">
+          <p className="font-label text-xs tracking-[0.25em] uppercase text-accent mb-6">
+            Service Record
+          </p>
+          <div className="grid gap-6">
+            {experience.map((role) => (
+              <article
+                key={`${role.title}-${role.org}`}
+                className="bg-blue blueprint-grid border border-blue-line p-6 md:p-8"
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-3 mb-1">
+                  <h3 className="font-display font-bold text-lg md:text-xl text-paper uppercase tracking-tight">
+                    {role.title}
+                    <span className="font-label font-normal normal-case text-paper-dim">
+                      {" "}
+                      — {role.org}
+                    </span>
+                  </h3>
+                  <span className="font-display text-[0.7rem] text-accent-bright shrink-0">
+                    {role.period}
+                  </span>
+                </div>
+                <p className="font-label text-xs text-paper-dim mb-4">
+                  {role.location}
+                  {role.note ? ` · ${role.note}` : ""}
+                </p>
+                <ul className="flex flex-col gap-1.5">
+                  {role.highlights.map((h) => (
+                    <li
+                      key={h}
+                      className="font-label text-sm text-paper flex gap-2"
+                    >
+                      <span className="text-accent-bright shrink-0">—</span>
+                      {h}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </div>
       </div>

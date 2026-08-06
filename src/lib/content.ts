@@ -1,8 +1,8 @@
 export const profile = {
   name: "Abubakar Imam Abdulsalam",
-  role: "Full-Stack Developer",
+  role: "Backend Software Engineer",
   tagline:
-    "I design and ship full systems — REST/gRPC APIs, message-driven services, and the interfaces on top of them. React and Next.js on the front; Node.js, NestJS, and .NET behind it.",
+    "I build and modify internal APIs for MIZAN and SEABASS — Sterling Bank's Sharia-compliant and conventional core banking platforms — shipping transaction-critical features in C#, ASP.NET, and Entity Framework. Full-stack capable too, from Angular interfaces to Node.js services.",
   email: "salamabubakarimam@gmail.com",
   resumeHref:
     "https://drive.google.com/uc?export=download&id=10XfaJMUgPjqd-jEuAxrgvp4EiU5SOZI3",
@@ -17,12 +17,53 @@ export const profile = {
 };
 
 export const bio =
-  "I build full-stack systems, not just screens. On the backend that means REST and gRPC APIs, message queues, Postgres schemas, and the security/observability work that keeps a service honest in production — idempotency, signed webhooks, health checks, metrics. On the frontend it means React, Next.js, and Angular interfaces that stay clear under real use. I ship work that holds up, and keep shipping until it exceeds what was asked for.";
+  "I'm a backend software engineer at Sterling Bank, where I build and modify internal APIs for MIZAN and SEABASS — the bank's Sharia-compliant and conventional core banking platforms — in C#, ASP.NET, and Entity Framework. My work sits on transaction-critical ground: account enquiry middleware, customer mandate management, teller till operations, and automated receipt generation, all inside a regulated financial environment. I also integrate these systems with KUSALA, Sterling's internal BPM platform, building on earlier hands-on experience there as an Automation Engineer. Before backend work, I spent a year front-line at Ecobank as a Customer Service Officer — that direct exposure to how banking actually works now shapes how I design the systems behind it. I'm comfortable across the full stack too: as a Software Engineer Intern at Platr, I helped build an internal Jira-style task-management tool end-to-end with Angular and Node.js. I came into software through a Biology degree and self-taught C#/.NET coursework rather than a straight line — which is most of why I pick up new systems fast under regulated, deadline-driven constraints.";
 
-export const experience = {
-  role: "Web Development Intern",
-  org: "Platr.ng",
+export type Role = {
+  title: string;
+  org: string;
+  period: string;
+  location: string;
+  note?: string;
+  highlights: string[];
 };
+
+export const experience: Role[] = [
+  {
+    title: "Software Engineer",
+    org: "Sterling Bank",
+    period: "Nov 2024 — Present",
+    location: "Lagos Island, Lagos State, Nigeria",
+    note: "Started as Automation Engineer on KUSALA; transitioned into a Software Engineering role",
+    highlights: [
+      "Modify and extend internal APIs for MIZAN (Sharia-compliant) and SEABASS (conventional) — Sterling Group's two live core banking platforms",
+      "Integrate MIZAN and SEABASS with KUSALA, Sterling's internal Business Process Management platform",
+      "Built and maintain the account enquiry middleware service for real-time customer account access across both core banking systems",
+      "Developed the customer mandate endpoint, used to manage account authorization rules",
+      "Developed the tellers till endpoint, supporting cash handling and reconciliation for branch tellers",
+      "Built an ASP.NET receipt-generation flow that automates transaction receipts for customers",
+    ],
+  },
+  {
+    title: "Customer Service Officer",
+    org: "Ecobank Nigeria",
+    period: "Jan 2024 — Nov 2024",
+    location: "Lagos State, Nigeria",
+    highlights: [
+      "Front-line banking operations and customer service — direct exposure that now informs how I design backend systems for financial platforms",
+    ],
+  },
+  {
+    title: "Software Engineer Intern",
+    org: "Platr",
+    period: "Jul 2023 — Nov 2023",
+    location: "Abuja, Federal Capital Territory, Nigeria",
+    highlights: [
+      "Contributed to an internal, Jira-style task-management system built for the technology team",
+      "Worked across the stack — Angular frontend, Node.js backend — for full-stack experience",
+    ],
+  },
+];
 
 export type Material = {
   part: string;

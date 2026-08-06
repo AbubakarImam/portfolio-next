@@ -88,7 +88,7 @@ export function CoverSheet() {
               <p className="text-paper-dim text-[0.65rem] uppercase mb-1">
                 Model
               </p>
-              Full-Stack
+              Backend Eng.
             </div>
             <div>
               <p className="text-paper-dim text-[0.65rem] uppercase mb-1">

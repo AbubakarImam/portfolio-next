@@ -24,7 +24,7 @@ A personal portfolio that proves full-stack development capability through real,
 
 ## Positioning
 
-Full-stack developer: React/Next.js/Angular on the frontend, Node.js (NestJS)/.NET 8/Firebase on the backend, Tailwind CSS and Figma for craft, shipped via Git/GitHub/Docker/Netlify/Vercel. The differentiator is breadth with polish — frontend-quality UI work paired with real backend engineering (gRPC/message-driven microservices, Clean Architecture APIs, security and observability practices), evidenced by twelve shipped, linked projects rather than a skills checklist alone.
+Backend software engineer, full-stack capable: C#/ASP.NET Core/Entity Framework in production at a live bank (Sterling Bank, on the MIZAN and SEABASS core banking platforms), NestJS/.NET Clean Architecture in personal systems work, React/Next.js/Angular on the frontend when needed, shipped via Git/GitHub/Docker/Netlify/Vercel. The differentiator is real backend depth under regulatory constraints — transaction-critical financial APIs, BPM integration — paired with genuine full-stack range, evidenced by a real employment history plus twelve shipped, linked projects rather than a skills checklist alone.
 
 ## Operating Context
 
@@ -52,8 +52,9 @@ Single-page-feeling marketing/portfolio site (one scrollable route, anchor navig
 
 ## Evidence on Hand
 
-- Bio copy (existing, reusable, may be lightly edited to reflect full-stack framing): frontend/full-stack narrative emphasizing responsive, modern-framework development.
-- Experience: Web Development Intern @ Platr.ng.
+- Bio and role framing (rewritten from the user's actual CV, 2026-08-06): now "Backend Software Engineer" first, full-stack second — matches the CV's own title ("Backend Software Engineer | C# .NET") rather than the earlier frontend-led framing.
+- Full employment history, from the CV, verbatim facts (not invented): Software Engineer @ Sterling Bank (Nov 2024–present, modifying MIZAN/SEABASS core banking APIs in C#/ASP.NET/EF, integrating with the KUSALA BPM platform); Customer Service Officer @ Ecobank Nigeria (Jan–Nov 2024); Software Engineer Intern @ Platr (Jul–Nov 2023, Angular/Node.js task-management tool). Rendered as a three-entry "Service Record" in `Specification.tsx`, sourced from `experience: Role[]` in `content.ts`.
+- Education (Biology, Gombe State University) and certifications (Google IT Support, C#/.NET courses, McKinsey Forward Program) are known from the CV but not yet surfaced on the site — folded into the bio as one line about the non-linear path in, not built as a dedicated section.
 - Skills (12): HTML, CSS, JavaScript, React, Angular, Git, GitHub, Tailwind CSS, Node.js, Figma, Netlify, Firebase.
 - Projects (9, each with title + image + GitHub link + demo link): Interno, Shoe Landing Page, City Tour, Travel Agency, ImamFits, Portfolio, Restaurant Menu, Koya App, Moviebox App.
 - Real photo assets: profile/avatar photo, a separate "about" photo — copied into `public/images/`.
