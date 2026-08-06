@@ -2,7 +2,7 @@ export const profile = {
   name: "Abubakar Imam Abdulsalam",
   role: "Backend Software Engineer",
   tagline:
-    "I build and modify internal APIs for MIZAN and SEABASS — Sterling Bank's Sharia-compliant and conventional core banking platforms — shipping transaction-critical features in C#, ASP.NET, and Entity Framework. Full-stack capable too, from Angular interfaces to Node.js services.",
+    "I build and integrate endpoints from MIZAN and SEABASS — Sterling Bank's Sharia-compliant and conventional core banking platforms — into KUSALA's BPM workflows, powering internal banking processes with transaction-critical features in C#, ASP.NET, and Entity Framework. Full-stack capable too, from Angular interfaces to Node.js services.",
   email: "salamabubakarimam@gmail.com",
   resumeHref:
     "https://drive.google.com/uc?export=download&id=10XfaJMUgPjqd-jEuAxrgvp4EiU5SOZI3",
