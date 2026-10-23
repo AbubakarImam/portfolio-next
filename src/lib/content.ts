@@ -1,3 +1,6 @@
+/** Canonical origin — the apex domain 308-redirects here. Used for share links, OG tags, RSS and sitemap. */
+export const siteUrl = "https://www.abubakarabdulsalam.com";
+
 export const profile = {
   name: "Abubakar Imam Abdulsalam",
   role: "Backend Software Engineer",

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Courier_Prime, Archivo } from "next/font/google";
+import { profile, siteUrl } from "@/lib/content";
 import "./globals.css";
 
 const stamp = Courier_Prime({
@@ -16,6 +17,9 @@ const label = Archivo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  openGraph: { siteName: profile.name, locale: "en_GB" },
+  twitter: { site: profile.socials.twitterHandle },
   title: "Abubakar Imam Abdulsalam — Full-Stack Field Manual",
   description:
     "A full-stack developer's build manual: shipped frontend and backend systems by Abubakar Imam Abdulsalam — React, Next.js, Angular, NestJS, .NET, and Node.",

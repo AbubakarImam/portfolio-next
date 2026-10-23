@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { profile } from "@/lib/content";
 import { GithubIcon, LinkedinIcon, TwitterIcon } from "./icons";
 
@@ -11,31 +12,32 @@ export function BackCover() {
   return (
     <footer className="relative bg-shop-deep border-t border-blue-line pt-14 pb-28">
       <div className="mx-auto w-[90%] max-w-6xl flex flex-col items-center text-center gap-8">
-        <a
-          href="#cover"
+        <Link
+          href="/#cover"
           className="font-display font-bold text-lg uppercase tracking-wide text-steel hover:text-accent-bright transition-colors"
         >
           {profile.name} — Field Manual
-        </a>
+        </Link>
 
         <nav
           aria-label="Footer"
           className="flex flex-wrap justify-center gap-x-8 gap-y-2"
         >
           {[
-            ["Cover", "#cover"],
-            ["Spec", "#spec"],
-            ["B.O.M.", "#bom"],
-            ["Assemblies", "#assemblies"],
-            ["Request", "#request"],
+            ["Cover", "/#cover"],
+            ["Spec", "/#spec"],
+            ["B.O.M.", "/#bom"],
+            ["Assemblies", "/#assemblies"],
+            ["Request", "/#request"],
+            ["Field Notes", "/blog"],
           ].map(([label, href]) => (
-            <a
+            <Link
               key={href}
               href={href}
               className="font-label text-xs tracking-[0.15em] uppercase text-steel-dim hover:text-accent-bright transition-colors"
             >
               {label}
-            </a>
+            </Link>
           ))}
         </nav>
 

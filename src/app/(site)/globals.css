@@ -1,0 +1,223 @@
+@import "tailwindcss";
+
+:root {
+  /* Shop floor (page ground) */
+  --color-shop: #16181b;
+  --color-shop-deep: #0b0c0e;
+
+  /* Blueprint plates (spec sheets, plaques) */
+  --color-blue: #1d3f5c;
+  --color-blue-deep: #14324a;
+  --color-blue-line: rgba(234, 243, 247, 0.14);
+
+  /* Text printed on blueprint plates */
+  --color-paper: #eaf3f7;
+  --color-paper-dim: rgba(234, 243, 247, 0.65);
+
+  /* Text printed directly on the shop floor */
+  --color-steel: #e7e9ea;
+  --color-steel-dim: rgba(231, 233, 234, 0.58);
+
+  /* Safety-orange accent: stamps, CTAs, active state */
+  --color-accent: #d9622c;
+  --color-accent-bright: #ef7a41;
+  --color-accent-dim: rgba(217, 98, 44, 0.35);
+}
+
+@theme inline {
+  --color-shop: var(--color-shop);
+  --color-shop-deep: var(--color-shop-deep);
+  --color-blue: var(--color-blue);
+  --color-blue-deep: var(--color-blue-deep);
+  --color-blue-line: var(--color-blue-line);
+  --color-paper: var(--color-paper);
+  --color-paper-dim: var(--color-paper-dim);
+  --color-steel: var(--color-steel);
+  --color-steel-dim: var(--color-steel-dim);
+  --color-accent: var(--color-accent);
+  --color-accent-bright: var(--color-accent-bright);
+  --color-accent-dim: var(--color-accent-dim);
+
+  --font-display: var(--font-display);
+  --font-label: var(--font-label);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-label), ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-shop-deep);
+}
+
+/* Faint machined grain on the shop floor */
+.shop-texture {
+  background-image:
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(234, 243, 247, 0.035),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(234, 243, 247, 0.025),
+      transparent 40%
+    );
+}
+
+/* Graph-paper grid on blueprint plates */
+.blueprint-grid {
+  background-image:
+    linear-gradient(var(--color-blue-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--color-blue-line) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+.accent-rule {
+  height: 2px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-accent),
+    var(--color-accent) 6px,
+    transparent 6px,
+    transparent 11px
+  );
+}
+
+.stamp {
+  transform: rotate(-3deg);
+}
+
+/* Blog post body: narrative prose on the shop floor; code sits on a deep recess */
+.post-body {
+  color: var(--color-steel);
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+.post-body > * + * {
+  margin-top: 1.25em;
+}
+.post-body h2,
+.post-body h3,
+.post-body h4 {
+  font-family: var(--font-display), ui-monospace, monospace;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-top: 2.25em;
+  scroll-margin-top: 2rem;
+}
+.post-body h2 {
+  font-size: 1.6rem;
+}
+.post-body h3 {
+  font-size: 1.25rem;
+}
+.post-body h2 a,
+.post-body h3 a,
+.post-body h4 a {
+  color: inherit;
+  text-decoration: none;
+}
+.post-body a {
+  color: var(--color-accent-bright);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.post-body a:hover {
+  color: var(--color-steel);
+}
+.post-body strong {
+  color: #fff;
+}
+.post-body ul,
+.post-body ol {
+  padding-left: 1.4em;
+}
+.post-body ul {
+  list-style: square;
+}
+.post-body ol {
+  list-style: decimal;
+}
+.post-body li + li {
+  margin-top: 0.4em;
+}
+.post-body li::marker {
+  color: var(--color-accent);
+}
+.post-body blockquote {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 1.1em;
+  color: var(--color-steel-dim);
+  font-style: italic;
+}
+.post-body hr {
+  border: 0;
+  height: 2px;
+  width: 5rem;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--color-accent),
+    var(--color-accent) 6px,
+    transparent 6px,
+    transparent 11px
+  );
+  margin: 2.5em 0;
+}
+.post-body img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--color-blue-line);
+}
+.post-body :not(pre) > code {
+  font-family: var(--font-display), ui-monospace, monospace;
+  font-size: 0.92em;
+  background: var(--color-shop-deep);
+  border: 1px solid var(--color-blue-line);
+  padding: 0.1em 0.35em;
+}
+.post-body pre {
+  font-family: var(--font-display), ui-monospace, monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  background: var(--color-shop-deep);
+  border: 1px solid var(--color-blue-line);
+  padding: 1.1em 1.25em;
+  overflow-x: auto;
+}
+.post-body figure[data-rehype-pretty-code-figure] {
+  margin-left: 0;
+  margin-right: 0;
+}
+.post-body table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  display: block;
+  overflow-x: auto;
+}
+.post-body th,
+.post-body td {
+  border: 1px solid var(--color-blue-line);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.post-body th {
+  background: var(--color-blue);
+  color: var(--color-paper);
+  font-family: var(--font-label), ui-sans-serif, sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
