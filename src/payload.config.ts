@@ -13,6 +13,18 @@ import { Users } from "./collections/Users";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+// The build reads posts from the database, so fail early with a clear message
+// instead of a cryptic MongoParseError when the env vars aren't set.
+for (const name of ["DATABASE_URL", "PAYLOAD_SECRET"]) {
+  if (!process.env[name]) {
+    throw new Error(
+      `${name} is not set. Locally, add it to .env.local (see .env.example). ` +
+        `On Vercel, add it under Settings → Environment Variables for both ` +
+        `Production and Preview, then redeploy: existing deployments don't pick up new variables.`,
+    );
+  }
+}
+
 export default buildConfig({
   admin: {
     user: Users.slug,
