@@ -44,8 +44,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           STORY: Visitor opens the cover sheet (hero), reads the
           specification (about), scans the bill of materials (skills by
           bin: Frontend/Backend/Tooling), pages through the assemblies
-          (12 shipped builds -- 3 backend systems with real specs, 9 frontend
-          builds with screenshots), and files a service request (contact).
+          (13 shipped builds -- 4 backend systems with real specs, led by
+          GARBATI (flagship, live demo), plus 9 frontend builds with
+          screenshots), and files a service request (contact).
           FIRST VIEWPORT: Dark shop floor, name stamped in large monospace
           type left-of-center, a spec plate below giving role + CTA pair,
           a framed ID-style portrait right, table of contents tab strip

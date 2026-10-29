@@ -36,9 +36,16 @@ export function Assemblies() {
                       {a.title}
                     </h3>
                   </div>
-                  <span className="stamp font-display text-[0.6rem] uppercase tracking-widest border border-accent text-accent-bright px-2 py-0.5">
-                    {a.status}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {a.featured && (
+                      <span className="stamp font-display text-[0.6rem] uppercase tracking-widest border border-accent-bright bg-accent-bright/10 text-accent-bright px-2 py-0.5">
+                        Flagship
+                      </span>
+                    )}
+                    <span className="stamp font-display text-[0.6rem] uppercase tracking-widest border border-accent text-accent-bright px-2 py-0.5">
+                      {a.status}
+                    </span>
+                  </div>
                 </div>
 
                 <p className="font-label text-sm text-paper-dim mb-4">
@@ -61,16 +68,30 @@ export function Assemblies() {
                   ))}
                 </ul>
 
-                <a
-                  href={a.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 font-label text-xs tracking-[0.08em] uppercase
-                  text-paper hover:text-accent-bright transition-colors"
-                >
-                  <GithubIcon className="w-4 h-4" />
-                  View source · {a.year}
-                </a>
+                <div className="flex items-center gap-5">
+                  {a.demo && (
+                    <a
+                      href={a.demo}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 font-label text-xs tracking-[0.08em] uppercase
+                      text-paper hover:text-accent-bright transition-colors"
+                    >
+                      <ArrowIcon className="w-4 h-4" />
+                      View live
+                    </a>
+                  )}
+                  <a
+                    href={a.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 font-label text-xs tracking-[0.08em] uppercase
+                    text-paper hover:text-accent-bright transition-colors"
+                  >
+                    <GithubIcon className="w-4 h-4" />
+                    View source · {a.year}
+                  </a>
+                </div>
               </div>
             </article>
           ))}
