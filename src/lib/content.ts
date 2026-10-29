@@ -1,3 +1,6 @@
+/** Canonical origin — the apex domain 308-redirects here. Used for share links, OG tags, RSS and sitemap. */
+export const siteUrl = "https://www.abubakarabdulsalam.com";
+
 export const profile = {
   name: "Abubakar Imam Abdulsalam",
   role: "Backend Software Engineer",
@@ -104,9 +107,35 @@ export type Assembly = {
   github: string;
   demo?: string;
   demoIsPlaceholder?: boolean;
+  featured?: boolean;
 };
 
 export const assemblies: Assembly[] = [
+  {
+    id: 13,
+    asm: "ASM-13",
+    title: "GARBATI — Core Banking Platform",
+    year: "2026",
+    category: "Systems",
+    stack: "ASP.NET Core 8 · PostgreSQL · Docker · Azure App Service · GitHub Actions (OIDC)",
+    layers: [
+      "Ops Console / Channel",
+      "OrchestratorApi",
+      "IdentityApi · ProductApi · StaffIdentityApi",
+      "LedgerApi (money truth, PostgreSQL)",
+    ],
+    highlights: [
+      "Six independently-deployed services — ledger, identity, orchestration, staff identity, ops backend, product/pricing — live on Azure, not a local demo",
+      "Double-entry ledger with atomic multi-leg chains: transfer + fee + tax post as one all-or-nothing transaction",
+      "Maker-checker and joint-account M-of-N approval workflows, backed by signed, time-boxed authorization grants (JWT, RFC 8725/9068-aligned)",
+      "Real Sharia-compliance research driving product design — profit-sharing vs. interest, late-fee-to-charity rules — sourced and documented, not assumed",
+      "Deployed via GitHub Actions OIDC (no stored cloud credentials); public docs site auto-synced from the real architecture docs on every change",
+    ],
+    status: "In service",
+    github: "https://github.com/AbubakarImam/garbati-platform",
+    demo: "https://abubakarimam.github.io/garbati-platform/",
+    featured: true,
+  },
   {
     id: 1,
     asm: "ASM-10",

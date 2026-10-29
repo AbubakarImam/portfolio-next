@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const sections = [
@@ -60,6 +61,16 @@ export function TableOfContents() {
           </a>
         );
       })}
+      <Link
+        href="/blog"
+        className="flex flex-col items-center gap-1 px-3.5 md:px-4 py-2.5 border-l border-blue-line
+        font-label text-steel-dim hover:text-steel transition-colors"
+      >
+        <span className="font-display text-xs tracking-wide">05</span>
+        <span className="text-[0.55rem] tracking-[0.15em] uppercase hidden md:block">
+          Notes
+        </span>
+      </Link>
     </nav>
   );
 }

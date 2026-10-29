@@ -1,0 +1,11 @@
+# Local MongoDB for developing the blog: `docker compose up -d`, then `npm run dev`.
+# Pinned to 8.2: newer mongo images refuse to start on Docker Desktop's recent Linux kernel.
+services:
+  mongo:
+    image: mongo:8.2
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+volumes:
+  mongo-data:
