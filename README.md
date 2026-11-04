@@ -94,6 +94,28 @@ its [Post Inspector](https://www.linkedin.com/post-inspector/).
    nobody can create an account without already being signed in, so a stranger can't claim
    the admin first. (To add a second admin later, sign in and use *Users → Create New*.)
 
+### Comments
+
+Readers comment at the bottom of each post with a name, email and comment, without signing in.
+
+- Comments appear on the post **as soon as they're posted**, and you get an email for each one,
+  with the comment, a link to it on the post and a link to it in the admin. Reply to that email
+  to answer the reader directly.
+- To take one down (spam, off-topic, abusive), open the admin link and set it to **Spam**, or
+  delete it. The post updates within a few seconds.
+- Comments with more than two links are the usual spam, so they're held as **Pending** and the
+  email says so. Set one to **Approved** to show it.
+- To answer publicly, fill in **Your reply** on the comment. It shows underneath, marked "Author".
+- Emails are visible only in the admin, for following up with readers. They're never on the page
+  or in the public API.
+- Spam checks: a hidden field bots fill in, a minimum time to fill in the form, and a limit of
+  3 comments per 10 minutes from one address.
+
+Notifications need these in Vercel (Production and Preview): `RESEND_API_KEY` from
+[resend.com](https://resend.com) after verifying abubakarabdulsalam.com there,
+`COMMENT_NOTIFY_EMAIL` (your inbox), and optionally `EMAIL_FROM_ADDRESS`, which defaults to
+`notes@abubakarabdulsalam.com`. Without a key, comments still work; the emails just aren't sent.
+
 ### Security
 
 - Writing, editing, publishing and uploading all require a signed-in admin. The public can only

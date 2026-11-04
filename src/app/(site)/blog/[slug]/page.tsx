@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { TocPanel, TocRail } from "@/components/ArticleToc";
 import { BackCover } from "@/components/BackCover";
 import { BlogMasthead } from "@/components/BlogMasthead";
+import { CommentSection } from "@/components/CommentSection";
 import { PostEnhancements } from "@/components/PostEnhancements";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareBar } from "@/components/ShareBar";
@@ -142,6 +143,8 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
             </p>
             <ShareBar url={url} title={post.title} />
           </footer>
+
+          <CommentSection postId={post.id} />
         </article>
       </main>
       <BackCover />
