@@ -19,7 +19,7 @@ export type PostMeta = {
   readingMinutes: number;
 };
 
-export type Post = PostMeta & { html: string; toc: TocEntry[] };
+export type Post = PostMeta & { id: string; html: string; toc: TocEntry[] };
 
 const toIsoDate = (value: string) => new Date(value).toISOString().slice(0, 10);
 
@@ -217,7 +217,7 @@ export const getPost = cache(
       disableIndent: true,
     });
 
-    return { ...(meta ?? toMeta(doc, "DRAFT")), html, toc };
+    return { ...(meta ?? toMeta(doc, "DRAFT")), id: String(doc.id), html, toc };
   },
 );
 

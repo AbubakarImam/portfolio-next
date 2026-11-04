@@ -94,6 +94,19 @@ its [Post Inspector](https://www.linkedin.com/post-inspector/).
    nobody can create an account without already being signed in, so a stranger can't claim
    the admin first. (To add a second admin later, sign in and use *Users → Create New*.)
 
+### Comments
+
+Readers comment at the bottom of each post with a name, email and comment, without signing in.
+
+- New comments land in **Blog → Comments** as **Pending** and stay off the site until you set
+  them to **Approved**. The post updates within a few seconds. **Spam** hides a comment for good;
+  you can also delete it.
+- To answer, fill in **Your reply** on the comment. It shows underneath, marked "Author".
+- Emails are visible only in the admin, for following up with readers. They're never on the page
+  or in the public API.
+- Spam checks: a hidden field bots fill in, a minimum time to fill in the form, and a limit of
+  3 comments per 10 minutes from one address. Anything that gets past them still waits for you.
+
 ### Security
 
 - Writing, editing, publishing and uploading all require a signed-in admin. The public can only

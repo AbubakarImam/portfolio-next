@@ -68,6 +68,7 @@ export interface Config {
   blocks: {};
   collections: {
     posts: Post;
+    comments: Comment;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -79,6 +80,7 @@ export interface Config {
   collectionsJoins: {};
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
+    comments: CommentsSelect<false> | CommentsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -162,6 +164,33 @@ export interface Post {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * New comments wait as Pending. Set a comment to Approved to show it on the post, or Spam to hide it.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments".
+ */
+export interface Comment {
+  id: string;
+  status: 'pending' | 'approved' | 'spam';
+  post: string | Post;
+  name: string;
+  /**
+   * Never shown on the site.
+   */
+  email: string;
+  body: string;
+  /**
+   * Optional. Shown under the comment, marked as from the author.
+   */
+  reply?: string | null;
+  /**
+   * Hashed IP address, used to rate-limit the comment form.
+   */
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -332,6 +361,10 @@ export interface PayloadLockedDocument {
         value: string | Post;
       } | null)
     | ({
+        relationTo: 'comments';
+        value: string | Comment;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -395,6 +428,21 @@ export interface PostsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comments_select".
+ */
+export interface CommentsSelect<T extends boolean = true> {
+  status?: T;
+  post?: T;
+  name?: T;
+  email?: T;
+  body?: T;
+  reply?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

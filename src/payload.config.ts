@@ -6,6 +6,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 
+import { Comments } from "./collections/Comments";
 import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
 import { Users } from "./collections/Users";
@@ -31,7 +32,7 @@ export default buildConfig({
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: " — Field Notes admin" },
   },
-  collections: [Posts, Media, Users],
+  collections: [Posts, Comments, Media, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
