@@ -166,7 +166,7 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * New comments wait as Pending. Set a comment to Approved to show it on the post, or Spam to hide it.
+ * Comments go live as soon as they're posted, and you get an email for each one. Set one to Spam (or delete it) to take it down. Comments with several links are held as Pending until you approve them.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "comments".

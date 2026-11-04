@@ -1,11 +1,52 @@
 import { revalidatePath } from "next/cache";
-import type { CollectionConfig, FieldAccess } from "payload";
+import type { CollectionAfterChangeHook, CollectionConfig, FieldAccess } from "payload";
+import { siteUrl } from "../lib/content";
 
 const signedIn: FieldAccess = ({ req }) => Boolean(req.user);
 
-// Reader comments. Readers don't sign in: the site's server action creates
-// comments as "pending", and they appear on the post only once approved here.
-// Emails are kept for following up and are never shown publicly.
+const escapeHtml = (s: string) =>
+  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+// Emails COMMENT_NOTIFY_EMAIL about each new comment, with links to read it on
+// the post and to remove it in the admin. A failed send never blocks the comment.
+const notifyAuthor: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
+  const to = process.env.COMMENT_NOTIFY_EMAIL;
+  if (operation !== "create" || !to) return doc;
+  try {
+    const post =
+      typeof doc.post === "object"
+        ? doc.post
+        : await req.payload.findByID({ collection: "posts", id: doc.post, depth: 0, req });
+    const live = doc.status === "approved";
+    const postUrl = `${siteUrl}/blog/${post.slug}#comment-${doc.id}`;
+    const adminUrl = `${siteUrl}/admin/collections/comments/${doc.id}`;
+    await req.payload.sendEmail({
+      to,
+      replyTo: doc.email,
+      subject: `${live ? "New comment" : "Comment held for review"} on “${post.title}” from ${doc.name}`,
+      html: `
+        <p><strong>${escapeHtml(doc.name)}</strong> &lt;${escapeHtml(doc.email)}&gt; commented on
+        <strong>${escapeHtml(post.title)}</strong>:</p>
+        <blockquote style="border-left:3px solid #d9622c;margin:0;padding:4px 12px;white-space:pre-line">${escapeHtml(doc.body)}</blockquote>
+        <p>${
+          live
+            ? "It's live on the post now."
+            : "It contains several links, so it was held as Pending and isn't on the post yet."
+        }</p>
+        <p>${live ? `<a href="${postUrl}">View it on the post</a> · ` : ""}<a href="${adminUrl}">${
+          live ? "Remove or mark as spam" : "Approve or remove"
+        }</a></p>
+        <p style="color:#888;font-size:12px">Reply to this email to answer ${escapeHtml(doc.name)} directly.</p>`,
+    });
+  } catch (err) {
+    req.payload.logger.error({ err, msg: "Couldn't send the new-comment email" });
+  }
+  return doc;
+};
+
+// Reader comments. Readers don't sign in: the site's server action publishes
+// each comment straight away and emails you about it, so you can remove spam
+// or abuse afterwards. Emails are kept for following up and never shown publicly.
 export const Comments: CollectionConfig = {
   slug: "comments",
   admin: {
@@ -14,7 +55,7 @@ export const Comments: CollectionConfig = {
     defaultColumns: ["name", "status", "post", "createdAt"],
     listSearchableFields: ["name", "email", "body"],
     description:
-      "New comments wait as Pending. Set a comment to Approved to show it on the post, or Spam to hide it.",
+      "Comments go live as soon as they're posted, and you get an email for each one. Set one to Spam (or delete it) to take it down. Comments with several links are held as Pending until you approve them.",
   },
   access: {
     // Created only through the site's comment form (src/app/(site)/blog/[slug]/actions.ts).
@@ -29,7 +70,7 @@ export const Comments: CollectionConfig = {
       name: "status",
       type: "select",
       required: true,
-      defaultValue: "pending",
+      defaultValue: "approved",
       index: true,
       options: [
         { label: "Pending", value: "pending" },
@@ -78,6 +119,7 @@ export const Comments: CollectionConfig = {
     // Only approved comments are on the page, so rebuild it when one is
     // approved, edited while approved, or taken down.
     afterChange: [
+      notifyAuthor,
       async ({ doc, previousDoc, req }) => {
         if (req.context.disableRevalidate) return doc;
         if (doc.status !== "approved" && previousDoc?.status !== "approved") return doc;

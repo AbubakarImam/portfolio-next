@@ -16,10 +16,13 @@ const RATE_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT = 3;
 const MIN_FILL_MS = 3000;
 
-const ok: CommentFormState = {
+const ok: CommentFormState = { status: "ok", message: "Thanks! Your comment is posted." };
+const held: CommentFormState = {
   status: "ok",
-  message: "Thanks! Your comment will appear here once it's been approved.",
+  message: "Thanks! Comments with several links are checked before they appear, so yours will show up shortly.",
 };
+// Link-heavy comments are the usual spam, so they wait for approval.
+const MAX_LINKS = 2;
 
 function clientIp(h: Headers) {
   return h.get("x-forwarded-for")?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
@@ -69,11 +72,16 @@ export async function submitComment(
   if (recent.totalDocs >= RATE_LIMIT)
     return fail("You've posted a few comments in a row. Please wait a few minutes and try again.");
 
+  const links = values.body.match(/https?:\/\/|www\./gi)?.length ?? 0;
+  const status = links > MAX_LINKS ? "pending" : "approved";
+
+  // Publishing revalidates the post, so the comment shows on the reader's
+  // page as soon as this returns.
   await payload.create({
     collection: "comments",
     overrideAccess: true,
-    data: { ...values, post: docs[0].id, status: "pending", ipHash },
+    data: { ...values, post: docs[0].id, status, ipHash },
   });
 
-  return ok;
+  return status === "approved" ? ok : held;
 }

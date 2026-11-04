@@ -1,4 +1,5 @@
 import { mongooseAdapter } from "@payloadcms/db-mongodb";
+import { resendAdapter } from "@payloadcms/email-resend";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { vercelBlobStorage } from "@payloadcms/storage-vercel-blob";
 import path from "path";
@@ -37,6 +38,15 @@ export default buildConfig({
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
   db: mongooseAdapter({ url: process.env.DATABASE_URL || "" }),
+  // Sends comment notifications (and admin password resets). Without a key,
+  // Payload logs emails to the console instead.
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY,
+        defaultFromAddress: process.env.EMAIL_FROM_ADDRESS || "notes@abubakarabdulsalam.com",
+        defaultFromName: "Field Notes",
+      })
+    : undefined,
   sharp,
   plugins: [
     // Vercel's filesystem is read-only, so uploaded images go to Vercel Blob in
