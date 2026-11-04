@@ -540,6 +540,82 @@ export interface TaskSchedulePublish {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MermaidBlock".
+ */
+export interface MermaidBlock {
+  /**
+   * Mermaid syntax, e.g. `flowchart LR` then `A[Client] --> B[API]`. Flowcharts, sequence, class, state, ER and C4 diagrams all work. Live editor: mermaid.live
+   */
+  diagram: string;
+  caption?: string | null;
+  width?: ('normal' | 'wide') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mermaid';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FigureBlock".
+ */
+export interface FigureBlock {
+  image: string | Media;
+  caption?: string | null;
+  width?: ('normal' | 'wide') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'figure';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CalloutBlock".
+ */
+export interface CalloutBlock {
+  kind: 'note' | 'key' | 'warning';
+  title?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'callout';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "EmbedBlock".
+ */
+export interface EmbedBlock {
+  /**
+   * Short name for screen readers, e.g. “Ledger posting simulator”.
+   */
+  title: string;
+  /**
+   * A complete HTML page, such as a Claude artifact. It runs in a sandboxed frame, so its scripts can't reach the rest of the site.
+   */
+  html: string;
+  /**
+   * Height in pixels. Leave empty to size the frame to its content.
+   */
+  height?: number | null;
+  caption?: string | null;
+  width?: ('normal' | 'wide') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'embed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {

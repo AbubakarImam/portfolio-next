@@ -53,6 +53,22 @@ The panel is [Payload CMS](https://payloadcms.com), running inside this Next.js 
 5. Open the post on the site and use its **Share** buttons (X, LinkedIn, WhatsApp, Copy link).
    Each post gets its own preview card image, generated from its title.
 
+#### Diagrams, embeds and other blocks
+
+The `+` / `/` menu also offers these blocks:
+
+- **Diagram (Mermaid):** write a flowchart, sequence, class, state, ER or C4 diagram as text
+  (try it out at [mermaid.live](https://mermaid.live)). It's drawn in the blueprint colours.
+- **Interactive embed (HTML):** paste a whole HTML page, such as a Claude artifact. It runs in a
+  sandboxed frame that can't touch the rest of the site, and sizes itself to its content unless
+  you set a height.
+- **Figure:** an uploaded image or SVG with a caption.
+- **Callout:** a Note, Key idea or Warning box.
+
+Diagrams, embeds and figures can be **Wide**, breaking out of the text column. Posts with three
+or more `H2` headings get a contents list, which sits beside the article on wide screens.
+Every heading has its own link, so you can share a specific section.
+
 The slug (the `/blog/<slug>` part of the link) is filled in from the title. Don't change it after
 sharing a post, or old links will break. To take a post down, open it and choose **Unpublish**.
 
