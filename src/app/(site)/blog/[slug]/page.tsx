@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
+import { TocPanel, TocRail } from "@/components/ArticleToc";
 import { BackCover } from "@/components/BackCover";
 import { BlogMasthead } from "@/components/BlogMasthead";
+import { PostEnhancements } from "@/components/PostEnhancements";
+import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareBar } from "@/components/ShareBar";
 import { profile, siteUrl } from "@/lib/content";
 import { formatDate, getAllPosts, getPost } from "@/lib/posts";
@@ -53,12 +56,21 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
   if (!post) notFound();
 
   const url = `${siteUrl}/blog/${post.slug}`;
+  // Short posts don't need a contents list.
+  const showToc = post.toc.filter((e) => e.level === 2).length >= 3;
 
   return (
     <>
+      <ReadingProgress targetId="post" />
       <BlogMasthead />
-      <main className="flex-1 py-16 md:py-24 shop-texture">
-        <article className="mx-auto w-[90%] max-w-3xl">
+      <main className="flex-1 py-16 md:py-24 shop-texture overflow-x-clip">
+        <article id="post" className="relative mx-auto w-[90%] max-w-3xl">
+          {showToc && (
+            // Sits in the left margin; wide figures stop short of it.
+            <aside className="hidden 2xl:block absolute right-full top-0 bottom-0 mr-40 w-48">
+              <TocRail entries={post.toc} />
+            </aside>
+          )}
           {draft && (
             <p className="mb-6 border border-accent px-4 py-2 font-label text-xs tracking-[0.15em] uppercase text-accent-bright">
               Preview — showing the latest saved draft.{" "}
@@ -112,10 +124,17 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
             </div>
           </header>
 
+          {showToc && (
+            <div className="2xl:hidden mb-12">
+              <TocPanel entries={post.toc} />
+            </div>
+          )}
+
           <div
             className="post-body"
             dangerouslySetInnerHTML={{ __html: post.html }}
           />
+          <PostEnhancements />
 
           <footer className="mt-16 bg-blue blueprint-grid border border-blue-line px-6 py-5">
             <p className="font-label text-sm text-paper mb-4">

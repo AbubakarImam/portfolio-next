@@ -8,6 +8,7 @@ import {
 } from "@payloadcms/richtext-lexical";
 import { revalidatePath } from "next/cache";
 import type { CollectionAfterChangeHook, CollectionConfig } from "payload";
+import { CalloutBlock, EmbedBlock, FigureBlock, MermaidBlock } from "../blocks";
 
 /** Languages offered in the editor's code block; keys are Monaco ids. */
 export const codeLanguages = {
@@ -98,6 +99,10 @@ export const Posts: CollectionConfig = {
           BlocksFeature({
             blocks: [
               CodeBlock({ languages: codeLanguages, defaultLanguage: "csharp" }),
+              MermaidBlock,
+              FigureBlock,
+              CalloutBlock,
+              EmbedBlock,
             ],
           }),
         ],
