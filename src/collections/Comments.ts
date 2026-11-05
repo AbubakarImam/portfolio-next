@@ -11,7 +11,7 @@ const escapeHtml = (s: string) =>
 // the post and to remove it in the admin. A failed send never blocks the comment.
 const notifyAuthor: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
   const to = process.env.COMMENT_NOTIFY_EMAIL;
-  if (operation !== "create" || !to) return doc;
+  if (operation !== "create" || !to || doc.byAuthor) return doc;
   try {
     const post =
       typeof doc.post === "object"
@@ -23,9 +23,13 @@ const notifyAuthor: CollectionAfterChangeHook = async ({ doc, operation, req }) 
     await req.payload.sendEmail({
       to,
       replyTo: doc.email,
-      subject: `${live ? "New comment" : "Comment held for review"} on “${post.title}” from ${doc.name}`,
+      subject: `${live ? (doc.parent ? "New reply" : "New comment") : "Comment held for review"} on “${post.title}” from ${doc.name}`,
       html: `
-        <p><strong>${escapeHtml(doc.name)}</strong> &lt;${escapeHtml(doc.email)}&gt; commented on
+        <p><strong>${escapeHtml(doc.name)}</strong> &lt;${escapeHtml(doc.email)}&gt; ${
+          doc.parent
+            ? `replied${doc.replyingToName ? ` to ${escapeHtml(doc.replyingToName)}` : ""} in a thread on`
+            : "commented on"
+        }
         <strong>${escapeHtml(post.title)}</strong>:</p>
         <blockquote style="border-left:3px solid #d9622c;margin:0;padding:4px 12px;white-space:pre-line">${escapeHtml(doc.body)}</blockquote>
         <p>${
@@ -41,6 +45,61 @@ const notifyAuthor: CollectionAfterChangeHook = async ({ doc, operation, req }) 
     });
   } catch (err) {
     req.payload.logger.error({ err, msg: "Couldn't send the new-comment email" });
+  }
+  return doc;
+};
+
+// Emails a commenter when someone replies to them in a thread: you, from the
+// site while signed in, or another reader. Sent once the reply is live (held
+// replies send when you approve them), then stamped so it's sent only once.
+// Readers never see each other's addresses: only your replies carry a reply-to.
+const notifyRespondent: CollectionAfterChangeHook = async ({ doc, req }) => {
+  if (
+    req.context.skipRespondentEmail ||
+    doc.status !== "approved" ||
+    !doc.respondsTo ||
+    doc.respondentNotifiedAt
+  )
+    return doc;
+  try {
+    const target =
+      typeof doc.respondsTo === "object"
+        ? doc.respondsTo
+        : await req.payload.findByID({ collection: "comments", id: doc.respondsTo, depth: 0, req });
+    if (!target?.email || target.email.toLowerCase() === doc.email.toLowerCase()) return doc;
+    const post =
+      typeof doc.post === "object"
+        ? doc.post
+        : await req.payload.findByID({ collection: "posts", id: doc.post, depth: 0, req });
+    const who = doc.byAuthor ? profile.name : doc.name;
+    const postUrl = `${siteUrl}/blog/${post.slug}#comment-${doc.id}`;
+    const quote = "border-left:3px solid #d9622c;margin:0 0 16px;padding:4px 12px;white-space:pre-line";
+    await req.payload.sendEmail({
+      to: target.email,
+      replyTo: doc.byAuthor ? process.env.COMMENT_NOTIFY_EMAIL || undefined : undefined,
+      subject: `${who} replied to your comment on “${post.title}”`,
+      html: `
+        <p>Hi ${escapeHtml(target.name)},</p>
+        <p>${escapeHtml(who)} replied to your comment on <strong>${escapeHtml(post.title)}</strong>.</p>
+        <p style="color:#888;font-size:12px;margin-bottom:4px">You wrote:</p>
+        <blockquote style="${quote};color:#666">${escapeHtml(target.body)}</blockquote>
+        <p style="color:#888;font-size:12px;margin-bottom:4px">${escapeHtml(who)}:</p>
+        <blockquote style="${quote}">${escapeHtml(doc.body)}</blockquote>
+        <p><a href="${postUrl}">See it and reply on the post</a></p>
+        <p style="color:#888;font-size:12px">You're getting this because you commented on abubakarabdulsalam.com.${
+          doc.byAuthor ? " You can also answer by replying to this email." : ""
+        }</p>`,
+    });
+    await req.payload.update({
+      collection: "comments",
+      id: doc.id,
+      data: { respondentNotifiedAt: new Date().toISOString() },
+      // Not disableRevalidate: this shares req, so it would also skip rebuilding the post for this save.
+      context: { skipRespondentEmail: true, skipReplyEmail: true },
+      req,
+    });
+  } catch (err) {
+    req.payload.logger.error({ err, msg: "Couldn't email the commenter about a reply" });
   }
   return doc;
 };
@@ -83,7 +142,8 @@ const notifyReader: CollectionAfterChangeHook = async ({ doc, operation, req }) 
       collection: "comments",
       id: doc.id,
       data: { replyEmailedAt: new Date().toISOString() },
-      context: { skipReplyEmail: true, disableRevalidate: true },
+      // Not disableRevalidate: this shares req, so it would also skip rebuilding the post for this save.
+      context: { skipReplyEmail: true, skipRespondentEmail: true },
       req,
     });
     return { ...doc, replyEmailedAt: stamped.replyEmailedAt };
@@ -104,7 +164,7 @@ export const Comments: CollectionConfig = {
     defaultColumns: ["name", "status", "post", "createdAt"],
     listSearchableFields: ["name", "email", "body"],
     description:
-      "Comments go live as soon as they're posted, and you get an email for each one. Set one to Spam (or delete it) to take it down. Comments with several links are held as Pending until you approve them.",
+      "Comments and replies go live as soon as they're posted, and you get an email for each one. Set one to Spam (or delete it) to take it down; deleting a top-level comment deletes its replies too. Comments with several links are held as Pending until you approve them. To reply, use Reply on the post while signed in, or fill in Your reply here.",
   },
   access: {
     // Created only through the site's comment form (src/app/(site)/blog/[slug]/actions.ts).
@@ -135,6 +195,43 @@ export const Comments: CollectionConfig = {
       required: true,
       index: true,
       admin: { position: "sidebar" },
+    },
+    {
+      name: "parent",
+      label: "In thread",
+      type: "relationship",
+      relationTo: "comments",
+      index: true,
+      admin: {
+        position: "sidebar",
+        readOnly: true,
+        description: "The top-level comment this reply sits under. Empty for top-level comments.",
+      },
+    },
+    {
+      name: "respondsTo",
+      type: "relationship",
+      relationTo: "comments",
+      admin: { hidden: true },
+    },
+    {
+      name: "replyingToName",
+      label: "Replying to",
+      type: "text",
+      admin: { position: "sidebar", readOnly: true },
+    },
+    {
+      name: "byAuthor",
+      label: "Posted by you",
+      type: "checkbox",
+      defaultValue: false,
+      admin: { position: "sidebar", readOnly: true },
+    },
+    {
+      name: "respondentNotifiedAt",
+      type: "date",
+      access: { read: signedIn },
+      admin: { hidden: true },
     },
     { name: "name", type: "text", required: true, maxLength: 80 },
     {
@@ -185,6 +282,7 @@ export const Comments: CollectionConfig = {
     afterChange: [
       notifyAuthor,
       notifyReader,
+      notifyRespondent,
       async ({ doc, previousDoc, req }) => {
         if (req.context.disableRevalidate) return doc;
         if (doc.status !== "approved" && previousDoc?.status !== "approved") return doc;
@@ -197,6 +295,16 @@ export const Comments: CollectionConfig = {
       },
     ],
     afterDelete: [
+      // A thread goes with its top-level comment.
+      async ({ doc, req }) => {
+        if (doc.parent) return doc;
+        await req.payload.delete({
+          collection: "comments",
+          where: { parent: { equals: doc.id } },
+          req,
+        });
+        return doc;
+      },
       async ({ doc, req }) => {
         if (req.context.disableRevalidate || doc.status !== "approved") return doc;
         const post =

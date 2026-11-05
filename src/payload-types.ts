@@ -166,7 +166,7 @@ export interface Post {
   _status?: ('draft' | 'published') | null;
 }
 /**
- * Comments go live as soon as they're posted, and you get an email for each one. Set one to Spam (or delete it) to take it down. Comments with several links are held as Pending until you approve them.
+ * Comments and replies go live as soon as they're posted, and you get an email for each one. Set one to Spam (or delete it) to take it down; deleting a top-level comment deletes its replies too. Comments with several links are held as Pending until you approve them. To reply, use Reply on the post while signed in, or fill in Your reply here.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "comments".
@@ -175,6 +175,14 @@ export interface Comment {
   id: string;
   status: 'pending' | 'approved' | 'spam';
   post: string | Post;
+  /**
+   * The top-level comment this reply sits under. Empty for top-level comments.
+   */
+  parent?: (string | null) | Comment;
+  respondsTo?: (string | null) | Comment;
+  replyingToName?: string | null;
+  byAuthor?: boolean | null;
+  respondentNotifiedAt?: string | null;
   name: string;
   /**
    * Never shown on the site.
@@ -440,6 +448,11 @@ export interface PostsSelect<T extends boolean = true> {
 export interface CommentsSelect<T extends boolean = true> {
   status?: T;
   post?: T;
+  parent?: T;
+  respondsTo?: T;
+  replyingToName?: T;
+  byAuthor?: T;
+  respondentNotifiedAt?: T;
   name?: T;
   email?: T;
   body?: T;

@@ -105,11 +105,16 @@ Readers comment at the bottom of each post with a name, email and comment, witho
   delete it. The post updates within a few seconds.
 - Comments with more than two links are the usual spam, so they're held as **Pending** and the
   email says so. Set one to **Approved** to show it.
-- To answer publicly, open the comment from the email's admin link (or **Blog → Comments**), fill in
-  **Your reply** and save. It shows underneath the comment, marked "Author", and the reader gets
-  your reply by email (reply-to is your `COMMENT_NOTIFY_EMAIL`, so their answer comes to you).
-  They're emailed once: **Reply emailed to reader** in the sidebar shows when, and fixing a typo
-  afterwards doesn't email them again.
+- **Threads:** anyone can reply to a comment or to a reply. Replies sit in a thread under the
+  top-level comment, collapsed to "N replies" so long discussions don't stretch the page, and
+  open automatically for a link to a reply inside (as in the emails).
+- **Replying as you:** sign in to `/admin`, then use **Reply** on the post. While you're signed in
+  the form posts as you, marked "Author", with no name, email or spam limits. You can also fill
+  in **Your reply** on a comment in the admin; it shows as the first reply in its thread.
+- **Who gets emailed:** you, about every comment and reply from readers. A reader, when someone
+  replies to them: your replies carry reply-to your `COMMENT_NOTIFY_EMAIL`, so their answer comes
+  to you, while replies from other readers never reveal anyone's address. Each reply emails once.
+- Deleting a top-level comment deletes its thread. Marking it Spam hides the thread with it.
 - Emails are visible only in the admin, for following up with readers. They're never on the page
   or in the public API.
 - Spam checks: a hidden field bots fill in, a minimum time to fill in the form, and a limit of
