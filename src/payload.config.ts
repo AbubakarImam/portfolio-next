@@ -9,6 +9,7 @@ import { fileURLToPath } from "url";
 
 import { CommentLikes } from "./collections/CommentLikes";
 import { Comments } from "./collections/Comments";
+import { Messages } from "./collections/Messages";
 import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
 import { PostViews } from "./collections/PostViews";
@@ -34,9 +35,14 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: " — Field Notes admin" },
-    components: { beforeDashboard: ["/components/admin/ViewsDashboard#ViewsDashboard"] },
+    components: {
+      beforeDashboard: [
+        "/components/admin/NewMessages#NewMessages",
+        "/components/admin/ViewsDashboard#ViewsDashboard",
+      ],
+    },
   },
-  collections: [Posts, Comments, CommentLikes, PostViews, Media, Users],
+  collections: [Posts, Comments, CommentLikes, Messages, PostViews, Media, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },
