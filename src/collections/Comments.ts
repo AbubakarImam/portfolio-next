@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import type { CollectionAfterChangeHook, CollectionConfig, FieldAccess } from "payload";
-import { siteUrl } from "../lib/content";
+import { profile, siteUrl } from "../lib/content";
 
 const signedIn: FieldAccess = ({ req }) => Boolean(req.user);
 
@@ -34,12 +34,61 @@ const notifyAuthor: CollectionAfterChangeHook = async ({ doc, operation, req }) 
             : "It contains several links, so it was held as Pending and isn't on the post yet."
         }</p>
         <p>${live ? `<a href="${postUrl}">View it on the post</a> · ` : ""}<a href="${adminUrl}">${
-          live ? "Remove or mark as spam" : "Approve or remove"
+          live ? "Reply, remove or mark as spam" : "Approve or remove"
         }</a></p>
-        <p style="color:#888;font-size:12px">Reply to this email to answer ${escapeHtml(doc.name)} directly.</p>`,
+        <p style="color:#888;font-size:12px">To reply publicly, fill in “Your reply” on the comment in the admin;
+        ${escapeHtml(doc.name)} gets an email with it. To answer privately, reply to this email.</p>`,
     });
   } catch (err) {
     req.payload.logger.error({ err, msg: "Couldn't send the new-comment email" });
+  }
+  return doc;
+};
+
+// Emails the reader the first time you fill in "Your reply" on their comment,
+// then stamps replyEmailedAt so later edits to the reply don't email them again.
+// If the send fails, the stamp stays empty and the next save tries again.
+const notifyReader: CollectionAfterChangeHook = async ({ doc, operation, req }) => {
+  if (
+    operation !== "update" ||
+    req.context.skipReplyEmail ||
+    doc.status !== "approved" ||
+    !doc.reply?.trim() ||
+    doc.replyEmailedAt
+  )
+    return doc;
+  try {
+    const post =
+      typeof doc.post === "object"
+        ? doc.post
+        : await req.payload.findByID({ collection: "posts", id: doc.post, depth: 0, req });
+    const postUrl = `${siteUrl}/blog/${post.slug}#comment-${doc.id}`;
+    const quote = "border-left:3px solid #d9622c;margin:0 0 16px;padding:4px 12px;white-space:pre-line";
+    await req.payload.sendEmail({
+      to: doc.email,
+      replyTo: process.env.COMMENT_NOTIFY_EMAIL || undefined,
+      subject: `${profile.name} replied to your comment on “${post.title}”`,
+      html: `
+        <p>Hi ${escapeHtml(doc.name)},</p>
+        <p>${escapeHtml(profile.name)} replied to your comment on <strong>${escapeHtml(post.title)}</strong>.</p>
+        <p style="color:#888;font-size:12px;margin-bottom:4px">You wrote:</p>
+        <blockquote style="${quote};color:#666">${escapeHtml(doc.body)}</blockquote>
+        <p style="color:#888;font-size:12px;margin-bottom:4px">Reply:</p>
+        <blockquote style="${quote}">${escapeHtml(doc.reply)}</blockquote>
+        <p><a href="${postUrl}">See it on the post</a></p>
+        <p style="color:#888;font-size:12px">You're getting this because you commented on abubakarabdulsalam.com.
+        You can answer by replying to this email.</p>`,
+    });
+    const stamped = await req.payload.update({
+      collection: "comments",
+      id: doc.id,
+      data: { replyEmailedAt: new Date().toISOString() },
+      context: { skipReplyEmail: true, disableRevalidate: true },
+      req,
+    });
+    return { ...doc, replyEmailedAt: stamped.replyEmailedAt };
+  } catch (err) {
+    req.payload.logger.error({ err, msg: "Couldn't email the reader about your reply" });
   }
   return doc;
 };
@@ -101,7 +150,22 @@ export const Comments: CollectionConfig = {
       label: "Your reply",
       type: "textarea",
       maxLength: 3000,
-      admin: { description: "Optional. Shown under the comment, marked as from the author." },
+      admin: {
+        description:
+          "Optional. Shown under the comment, marked as from the author. The first time you save a reply, the reader gets it by email.",
+      },
+    },
+    {
+      name: "replyEmailedAt",
+      label: "Reply emailed to reader",
+      type: "date",
+      access: { read: signedIn },
+      admin: {
+        position: "sidebar",
+        readOnly: true,
+        date: { pickerAppearance: "dayAndTime" },
+        description: "Set when the reader was emailed your reply. Editing the reply afterwards doesn't email them again.",
+      },
     },
     {
       name: "ipHash",
@@ -120,6 +184,7 @@ export const Comments: CollectionConfig = {
     // approved, edited while approved, or taken down.
     afterChange: [
       notifyAuthor,
+      notifyReader,
       async ({ doc, previousDoc, req }) => {
         if (req.context.disableRevalidate) return doc;
         if (doc.status !== "approved" && previousDoc?.status !== "approved") return doc;

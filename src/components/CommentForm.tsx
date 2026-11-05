@@ -76,7 +76,7 @@ export function CommentForm({ postId }: { postId: string }) {
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-steel-dim max-w-sm">
-          Your email is never published. I may use it to reply to you directly.
+          Your email is never published. If I reply, you’ll get my reply by email.
         </p>
         <button
           type="submit"
