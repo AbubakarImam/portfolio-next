@@ -85,14 +85,14 @@ export function ReplyButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="mt-2 font-label text-[0.65rem] tracking-[0.25em] uppercase text-steel-dim hover:text-accent transition-colors"
+        className="font-label text-[0.65rem] tracking-[0.25em] uppercase text-steel-dim hover:text-accent transition-colors"
       >
         Reply
       </button>
     );
 
   return (
-    <div className="mt-4 bg-blue blueprint-grid border border-blue-line px-4 py-4 sm:px-5">
+    <div className="basis-full mt-4 bg-blue blueprint-grid border border-blue-line px-4 py-4 sm:px-5">
       <CommentForm
         postId={postId}
         replyTo={target}
