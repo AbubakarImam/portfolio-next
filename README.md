@@ -105,7 +105,11 @@ Readers comment at the bottom of each post with a name, email and comment, witho
   delete it. The post updates within a few seconds.
 - Comments with more than two links are the usual spam, so they're held as **Pending** and the
   email says so. Set one to **Approved** to show it.
-- To answer publicly, fill in **Your reply** on the comment. It shows underneath, marked "Author".
+- To answer publicly, open the comment from the email's admin link (or **Blog → Comments**), fill in
+  **Your reply** and save. It shows underneath the comment, marked "Author", and the reader gets
+  your reply by email (reply-to is your `COMMENT_NOTIFY_EMAIL`, so their answer comes to you).
+  They're emailed once: **Reply emailed to reader** in the sidebar shows when, and fixing a typo
+  afterwards doesn't email them again.
 - Emails are visible only in the admin, for following up with readers. They're never on the page
   or in the public API.
 - Spam checks: a hidden field bots fill in, a minimum time to fill in the form, and a limit of
@@ -114,7 +118,10 @@ Readers comment at the bottom of each post with a name, email and comment, witho
 Notifications need these in Vercel (Production and Preview): `RESEND_API_KEY` from
 [resend.com](https://resend.com) after verifying abubakarabdulsalam.com there,
 `COMMENT_NOTIFY_EMAIL` (your inbox), and optionally `EMAIL_FROM_ADDRESS`, which defaults to
-`notes@abubakarabdulsalam.com`. Without a key, comments still work; the emails just aren't sent.
+`notes@abubakarabdulsalam.com`. Without a key, comments still work; the emails just aren't sent. Resend only sends from a domain
+you've verified there (its DNS records must show **Verified**), and reply emails to readers need
+that too. If emails don't arrive, check Vercel → Logs for "Couldn't send" or "Couldn't email",
+which carry Resend's reason.
 
 ### Security
 

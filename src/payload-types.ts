@@ -182,9 +182,13 @@ export interface Comment {
   email: string;
   body: string;
   /**
-   * Optional. Shown under the comment, marked as from the author.
+   * Optional. Shown under the comment, marked as from the author. The first time you save a reply, the reader gets it by email.
    */
   reply?: string | null;
+  /**
+   * Set when the reader was emailed your reply. Editing the reply afterwards doesn't email them again.
+   */
+  replyEmailedAt?: string | null;
   /**
    * Hashed IP address, used to rate-limit the comment form.
    */
@@ -440,6 +444,7 @@ export interface CommentsSelect<T extends boolean = true> {
   email?: T;
   body?: T;
   reply?: T;
+  replyEmailedAt?: T;
   ipHash?: T;
   updatedAt?: T;
   createdAt?: T;
