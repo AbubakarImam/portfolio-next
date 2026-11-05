@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     posts: Post;
     comments: Comment;
+    'post-views': PostView;
     media: Media;
     users: User;
     'payload-kv': PayloadKv;
@@ -81,6 +82,7 @@ export interface Config {
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
     comments: CommentsSelect<false> | CommentsSelect<true>;
+    'post-views': PostViewsSelect<false> | PostViewsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -201,6 +203,35 @@ export interface Comment {
    * Hashed IP address, used to rate-limit the comment form.
    */
   ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Views per post per day. The dashboard sums these up.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post-views".
+ */
+export interface PostView {
+  id: string;
+  post: string | Post;
+  /**
+   * YYYY-MM-DD, Lagos time.
+   */
+  day: string;
+  views: number;
+  /**
+   * Views by where the reader came from.
+   */
+  sources?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -377,6 +408,10 @@ export interface PayloadLockedDocument {
         value: string | Comment;
       } | null)
     | ({
+        relationTo: 'post-views';
+        value: string | PostView;
+      } | null)
+    | ({
         relationTo: 'media';
         value: string | Media;
       } | null)
@@ -459,6 +494,18 @@ export interface CommentsSelect<T extends boolean = true> {
   reply?: T;
   replyEmailedAt?: T;
   ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post-views_select".
+ */
+export interface PostViewsSelect<T extends boolean = true> {
+  post?: T;
+  day?: T;
+  views?: T;
+  sources?: T;
   updatedAt?: T;
   createdAt?: T;
 }
