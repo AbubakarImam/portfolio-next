@@ -221,6 +221,19 @@ export const Comments: CollectionConfig = {
       admin: { position: "sidebar", readOnly: true },
     },
     {
+      name: "likes",
+      type: "number",
+      defaultValue: 0,
+      admin: { position: "sidebar", readOnly: true },
+    },
+    {
+      name: "likedByAuthor",
+      label: "Liked by you",
+      type: "checkbox",
+      defaultValue: false,
+      admin: { position: "sidebar", readOnly: true },
+    },
+    {
       name: "byAuthor",
       label: "Posted by you",
       type: "checkbox",
@@ -295,6 +308,10 @@ export const Comments: CollectionConfig = {
       },
     ],
     afterDelete: [
+      async ({ doc, req }) => {
+        await req.payload.db.collections["comment-likes"].deleteMany({ comment: doc.id });
+        return doc;
+      },
       // A thread goes with its top-level comment.
       async ({ doc, req }) => {
         if (doc.parent) return doc;

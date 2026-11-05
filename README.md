@@ -114,6 +114,9 @@ Readers comment at the bottom of each post with a name, email and comment, witho
 - **Who gets emailed:** you, about every comment and reply from readers. A reader, when someone
   replies to them: your replies carry reply-to your `COMMENT_NOTIFY_EMAIL`, so their answer comes
   to you, while replies from other readers never reveal anyone's address. Each reply emails once.
+- **Likes:** every comment and reply has a heart readers can tap, without signing in, and tap
+  again to take back. Each browser can like a comment once, and one connection can like at most
+  60 comments per 10 minutes. Signed in, your like also shows "♥ by author" on the comment.
 - Deleting a top-level comment deletes its thread. Marking it Spam hides the thread with it.
 - Emails are visible only in the admin, for following up with readers. They're never on the page
   or in the public API.

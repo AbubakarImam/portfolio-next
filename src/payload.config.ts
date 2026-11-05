@@ -7,6 +7,7 @@ import { buildConfig } from "payload";
 import sharp from "sharp";
 import { fileURLToPath } from "url";
 
+import { CommentLikes } from "./collections/CommentLikes";
 import { Comments } from "./collections/Comments";
 import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
@@ -35,7 +36,7 @@ export default buildConfig({
     meta: { titleSuffix: " — Field Notes admin" },
     components: { beforeDashboard: ["/components/admin/ViewsDashboard#ViewsDashboard"] },
   },
-  collections: [Posts, Comments, PostViews, Media, Users],
+  collections: [Posts, Comments, CommentLikes, PostViews, Media, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },

@@ -1,6 +1,7 @@
 import { getCommentThreads, type PublicReply } from "@/lib/comments";
 import { CommentForm } from "./CommentForm";
 import { ReplyButton, ThreadReplies } from "./CommentThread";
+import { LikeButton } from "./LikeButton";
 
 const formatWhen = (iso: string) =>
   new Date(iso).toLocaleDateString("en-GB", {
@@ -55,7 +56,10 @@ function Comment({
           <p className="mt-1 font-label text-xs text-steel-dim">↳ replying to {c.replyingTo}</p>
         )}
         <p className="mt-2 text-steel leading-relaxed whitespace-pre-line break-words">{c.body}</p>
-        <ReplyButton postId={postId} thread={thread} target={{ ...c.target, name: c.name }} />
+        <div className="mt-2 flex flex-wrap items-center gap-x-5">
+          {c.likeable && <LikeButton commentId={c.id} likes={c.likes} likedByAuthor={c.likedByAuthor} />}
+          <ReplyButton postId={postId} thread={thread} target={{ ...c.target, name: c.name }} />
+        </div>
         {children}
       </div>
     </li>

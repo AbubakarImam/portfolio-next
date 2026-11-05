@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     posts: Post;
     comments: Comment;
+    'comment-likes': CommentLike;
     'post-views': PostView;
     media: Media;
     users: User;
@@ -82,6 +83,7 @@ export interface Config {
   collectionsSelect: {
     posts: PostsSelect<false> | PostsSelect<true>;
     comments: CommentsSelect<false> | CommentsSelect<true>;
+    'comment-likes': CommentLikesSelect<false> | CommentLikesSelect<true>;
     'post-views': PostViewsSelect<false> | PostViewsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -183,6 +185,8 @@ export interface Comment {
   parent?: (string | null) | Comment;
   respondsTo?: (string | null) | Comment;
   replyingToName?: string | null;
+  likes?: number | null;
+  likedByAuthor?: boolean | null;
   byAuthor?: boolean | null;
   respondentNotifiedAt?: string | null;
   name: string;
@@ -202,6 +206,18 @@ export interface Comment {
   /**
    * Hashed IP address, used to rate-limit the comment form.
    */
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comment-likes".
+ */
+export interface CommentLike {
+  id: string;
+  comment: string | Comment;
+  voter: string;
   ipHash?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -408,6 +424,10 @@ export interface PayloadLockedDocument {
         value: string | Comment;
       } | null)
     | ({
+        relationTo: 'comment-likes';
+        value: string | CommentLike;
+      } | null)
+    | ({
         relationTo: 'post-views';
         value: string | PostView;
       } | null)
@@ -486,6 +506,8 @@ export interface CommentsSelect<T extends boolean = true> {
   parent?: T;
   respondsTo?: T;
   replyingToName?: T;
+  likes?: T;
+  likedByAuthor?: T;
   byAuthor?: T;
   respondentNotifiedAt?: T;
   name?: T;
@@ -493,6 +515,17 @@ export interface CommentsSelect<T extends boolean = true> {
   body?: T;
   reply?: T;
   replyEmailedAt?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "comment-likes_select".
+ */
+export interface CommentLikesSelect<T extends boolean = true> {
+  comment?: T;
+  voter?: T;
   ipHash?: T;
   updatedAt?: T;
   createdAt?: T;

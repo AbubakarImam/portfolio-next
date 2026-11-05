@@ -11,6 +11,10 @@ export type PublicReply = {
   date: string;
   byAuthor: boolean;
   replyingTo: string | null;
+  likes: number;
+  likedByAuthor: boolean;
+  /** False for the admin's "Your reply", which isn't a comment of its own. */
+  likeable: boolean;
   /** What a reply to this one posts as `replyTo` (and `toAuthor`). */
   target: { id: string; toAuthor: boolean };
 };
@@ -40,6 +44,8 @@ export const getCommentThreads = cache(async (postId: string): Promise<PublicCom
       parent: true,
       replyingToName: true,
       byAuthor: true,
+      likes: true,
+      likedByAuthor: true,
       createdAt: true,
     },
   });
@@ -55,6 +61,9 @@ export const getCommentThreads = cache(async (postId: string): Promise<PublicCom
       date: c.createdAt,
       byAuthor: Boolean(c.byAuthor),
       replyingTo: c.replyingToName ?? null,
+      likes: c.likes ?? 0,
+      likedByAuthor: Boolean(c.likedByAuthor),
+      likeable: true,
       target: { id, toAuthor: false },
     };
     const parent = idOf(c.parent);
@@ -72,6 +81,9 @@ export const getCommentThreads = cache(async (postId: string): Promise<PublicCom
         date: c.replyEmailedAt ?? c.createdAt,
         byAuthor: true,
         replyingTo: null,
+        likes: 0,
+        likedByAuthor: false,
+        likeable: false,
         target: { id, toAuthor: true },
       });
     threads.set(id, thread);
