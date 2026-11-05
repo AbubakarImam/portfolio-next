@@ -4,10 +4,13 @@ import config from "@payload-config";
 import { createHash } from "crypto";
 import { headers } from "next/headers";
 import { getPayload } from "payload";
+import { profile } from "@/lib/content";
 
 export type CommentFormState = {
   status: "idle" | "ok" | "error";
   message: string;
+  /** The thread the new reply landed in, so the page can open it. */
+  thread?: string;
   /** Echoed back on error so the form keeps what the reader typed. */
   values?: { name: string; email: string; body: string };
 };
@@ -42,13 +45,21 @@ export async function submitComment(
   const started = Number(get("started"));
   if (get("website") || !started || Date.now() - started < MIN_FILL_MS) return ok;
 
+  const payload = await getPayload({ config });
+  const h = await headers();
+  // Signed in to the admin: post as the author, skipping the name, email and
+  // spam limits.
+  const { user } = await payload.auth({ headers: h });
+  if (user) {
+    values.name = profile.name;
+    values.email = process.env.COMMENT_NOTIFY_EMAIL || String(user.email);
+  }
+
   if (!values.name || values.name.length > 80) return fail("Please enter your name (up to 80 characters).");
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email) || values.email.length > 254)
     return fail("Please enter a valid email address.");
   if (values.body.length < 2) return fail("Please write a comment.");
   if (values.body.length > 3000) return fail("Comments can be up to 3,000 characters.");
-
-  const payload = await getPayload({ config });
 
   const { docs } = await payload.find({
     collection: "posts",
@@ -58,10 +69,39 @@ export async function submitComment(
   });
   if (!docs[0]) return fail("This post isn't accepting comments.");
 
+  // Replies all sit one level under the top-level comment, labelled with who
+  // they answer. "toAuthor" is a reply to the author's "Your reply" on that
+  // comment, which isn't a comment of its own.
+  let thread: { parent: string; respondsTo?: string; replyingToName?: string } | undefined;
+  if (get("replyTo")) {
+    const { docs: targets } = await payload.find({
+      collection: "comments",
+      overrideAccess: true,
+      where: {
+        id: { equals: get("replyTo") },
+        post: { equals: docs[0].id },
+        status: { equals: "approved" },
+      },
+      limit: 1,
+      depth: 0,
+    });
+    const target = targets[0];
+    if (!target) return fail("That comment is no longer available, so you can't reply to it.");
+    const parent = String(target.parent ?? target.id);
+    // You hear about every reply anyway, so only readers are emailed as the person replied to.
+    if (get("toAuthor") === "1" || target.byAuthor) thread = { parent, replyingToName: profile.name };
+    else
+      thread = {
+        parent,
+        respondsTo: String(target.id),
+        replyingToName: String(target.id) === parent ? undefined : target.name,
+      };
+  }
+
   const ipHash = createHash("sha256")
-    .update(`${process.env.PAYLOAD_SECRET}:${clientIp(await headers())}`)
+    .update(`${process.env.PAYLOAD_SECRET}:${clientIp(h)}`)
     .digest("hex");
-  const recent = await payload.count({
+  const recent = user ? { totalDocs: 0 } : await payload.count({
     collection: "comments",
     overrideAccess: true,
     where: {
@@ -73,15 +113,16 @@ export async function submitComment(
     return fail("You've posted a few comments in a row. Please wait a few minutes and try again.");
 
   const links = values.body.match(/https?:\/\/|www\./gi)?.length ?? 0;
-  const status = links > MAX_LINKS ? "pending" : "approved";
+  const status = links > MAX_LINKS && !user ? "pending" : "approved";
 
   // Publishing revalidates the post, so the comment shows on the reader's
   // page as soon as this returns.
   await payload.create({
     collection: "comments",
     overrideAccess: true,
-    data: { ...values, post: docs[0].id, status, ipHash },
+    data: { ...values, post: docs[0].id, status, ipHash, byAuthor: Boolean(user), ...thread },
   });
 
-  return status === "approved" ? ok : held;
+  if (status !== "approved") return held;
+  return thread ? { status: "ok", message: "Thanks! Your reply is posted.", thread: thread.parent } : ok;
 }

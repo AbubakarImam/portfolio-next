@@ -1,17 +1,30 @@
 import config from "@payload-config";
 import { getPayload } from "payload";
 import { cache } from "react";
+import { profile } from "./content";
 
-export type PublicComment = {
+export type PublicReply = {
+  /** Element id on the page, `comment-<id>`. */
   id: string;
   name: string;
   body: string;
-  reply: string | null;
   date: string;
+  byAuthor: boolean;
+  replyingTo: string | null;
+  /** What a reply to this one posts as `replyTo` (and `toAuthor`). */
+  target: { id: string; toAuthor: boolean };
 };
 
-/** Approved comments on a post, oldest first. Emails are never included. */
-export const getApprovedComments = cache(async (postId: string): Promise<PublicComment[]> => {
+export type PublicComment = PublicReply & { replies: PublicReply[] };
+
+const idOf = (v: unknown) => (v && typeof v === "object" ? String((v as { id: unknown }).id) : v ? String(v) : null);
+
+/**
+ * Approved comments on a post as threads, oldest first. Replies sit one level
+ * under their top-level comment; replies whose comment was taken down are
+ * dropped with it. Emails are never included.
+ */
+export const getCommentThreads = cache(async (postId: string): Promise<PublicComment[]> => {
   const payload = await getPayload({ config });
   const { docs } = await payload.find({
     collection: "comments",
@@ -19,13 +32,51 @@ export const getApprovedComments = cache(async (postId: string): Promise<PublicC
     sort: "createdAt",
     pagination: false,
     depth: 0,
-    select: { name: true, body: true, reply: true, createdAt: true },
+    select: {
+      name: true,
+      body: true,
+      reply: true,
+      replyEmailedAt: true,
+      parent: true,
+      replyingToName: true,
+      byAuthor: true,
+      createdAt: true,
+    },
   });
-  return docs.map((c) => ({
-    id: String(c.id),
-    name: c.name,
-    body: c.body,
-    reply: c.reply ?? null,
-    date: c.createdAt,
-  }));
+
+  const threads = new Map<string, PublicComment>();
+  const replies: [string, PublicReply][] = [];
+  for (const c of docs) {
+    const id = String(c.id);
+    const item: PublicReply = {
+      id,
+      name: c.byAuthor ? profile.name : c.name,
+      body: c.body,
+      date: c.createdAt,
+      byAuthor: Boolean(c.byAuthor),
+      replyingTo: c.replyingToName ?? null,
+      target: { id, toAuthor: false },
+    };
+    const parent = idOf(c.parent);
+    if (parent) {
+      replies.push([parent, item]);
+      continue;
+    }
+    const thread: PublicComment = { ...item, replies: [] };
+    // The admin's "Your reply" field shows as the author's reply in the thread.
+    if (c.reply?.trim())
+      thread.replies.push({
+        id: `${id}-reply`,
+        name: profile.name,
+        body: c.reply,
+        date: c.replyEmailedAt ?? c.createdAt,
+        byAuthor: true,
+        replyingTo: null,
+        target: { id, toAuthor: true },
+      });
+    threads.set(id, thread);
+  }
+  for (const [parent, reply] of replies) threads.get(parent)?.replies.push(reply);
+  for (const t of threads.values()) t.replies.sort((a, b) => a.date.localeCompare(b.date));
+  return [...threads.values()];
 });
