@@ -9,6 +9,7 @@ import { CommentSection } from "@/components/CommentSection";
 import { PostEnhancements } from "@/components/PostEnhancements";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareBar } from "@/components/ShareBar";
+import { ViewTracker } from "@/components/ViewTracker";
 import { profile, siteUrl } from "@/lib/content";
 import { formatDate, getAllPosts, getPost } from "@/lib/posts";
 
@@ -136,6 +137,7 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
             dangerouslySetInnerHTML={{ __html: post.html }}
           />
           <PostEnhancements />
+          {!draft && <ViewTracker postId={post.id} />}
 
           <footer className="mt-16 bg-blue blueprint-grid border border-blue-line px-6 py-5">
             <p className="font-label text-sm text-paper mb-4">

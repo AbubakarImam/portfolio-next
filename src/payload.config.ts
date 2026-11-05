@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 import { Comments } from "./collections/Comments";
 import { Media } from "./collections/Media";
 import { Posts } from "./collections/Posts";
+import { PostViews } from "./collections/PostViews";
 import { Users } from "./collections/Users";
 
 const filename = fileURLToPath(import.meta.url);
@@ -32,8 +33,9 @@ export default buildConfig({
     user: Users.slug,
     importMap: { baseDir: path.resolve(dirname) },
     meta: { titleSuffix: " — Field Notes admin" },
+    components: { beforeDashboard: ["/components/admin/ViewsDashboard#ViewsDashboard"] },
   },
-  collections: [Posts, Comments, Media, Users],
+  collections: [Posts, Comments, PostViews, Media, Users],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: { outputFile: path.resolve(dirname, "payload-types.ts") },

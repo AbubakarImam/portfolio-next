@@ -128,6 +128,22 @@ you've verified there (its DNS records must show **Verified**), and reply emails
 that too. If emails don't arrive, check Vercel → Logs for "Couldn't send" or "Couldn't email",
 which carry Resend's reason.
 
+### Article views
+
+The admin dashboard (`/admin`) opens with **Article views**: totals for today, 7 days, 30 days and
+all time, a row per post with its 30-day trend, and where readers came from (X, LinkedIn,
+WhatsApp, search, and so on). **Blog → Daily views** has the raw numbers per post per day.
+
+- A view is one browser session opening a published post. Reloading doesn't count again, and
+  your own visits while signed in to the admin aren't counted. Most bots don't run the counting
+  script, and those that do are filtered out by user agent.
+- The Share buttons tag their links (`?utm_source=whatsapp`, etc.) so WhatsApp and app traffic,
+  which sends no referrer, still shows its source. The tag is removed from the reader's address
+  bar after the view is counted. Links you paste yourself show as "Direct / apps" unless you add
+  `?utm_source=...` to them.
+- No cookies, IP addresses or visitor IDs are stored, so there's no cookie banner to add.
+- Days run on Lagos time.
+
 ### Security
 
 - Writing, editing, publishing and uploading all require a signed-in admin. The public can only

@@ -5,24 +5,26 @@ import { LinkedinIcon, TwitterIcon, WhatsappIcon } from "./icons";
 
 export function ShareBar({ url, title }: { url: string; title: string }) {
   const [copied, setCopied] = useState(false);
-  const u = encodeURIComponent(url);
   const t = encodeURIComponent(title);
+  // Tagged so the views dashboard can tell where readers came from, even from
+  // apps like WhatsApp that don't send a referrer.
+  const tagged = (source: string) => `${url}${url.includes("?") ? "&" : "?"}utm_source=${source}`;
 
   const targets = [
     {
       label: "X / Twitter",
       icon: TwitterIcon,
-      href: `https://x.com/intent/post?text=${t}&url=${u}`,
+      href: `https://x.com/intent/post?text=${t}&url=${encodeURIComponent(tagged("x"))}`,
     },
     {
       label: "LinkedIn",
       icon: LinkedinIcon,
-      href: `https://www.linkedin.com/sharing/share-offsite/?url=${u}`,
+      href: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(tagged("linkedin"))}`,
     },
     {
       label: "WhatsApp",
       icon: WhatsappIcon,
-      href: `https://wa.me/?text=${encodeURIComponent(`${title} ${url}`)}`,
+      href: `https://wa.me/?text=${encodeURIComponent(`${title} ${tagged("whatsapp")}`)}`,
     },
   ];
 
