@@ -6,6 +6,7 @@ import { TocPanel, TocRail } from "@/components/ArticleToc";
 import { BackCover } from "@/components/BackCover";
 import { BlogMasthead } from "@/components/BlogMasthead";
 import { CommentSection } from "@/components/CommentSection";
+import { MessageAuthor } from "@/components/MessageAuthor";
 import { PostEnhancements } from "@/components/PostEnhancements";
 import { ReadingProgress } from "@/components/ReadingProgress";
 import { ShareBar } from "@/components/ShareBar";
@@ -144,6 +145,7 @@ export default async function BlogPost(props: PageProps<"/blog/[slug]">) {
               Found this useful? Pass it on.
             </p>
             <ShareBar url={url} title={post.title} />
+            {!draft && <MessageAuthor postId={post.id} />}
           </footer>
 
           <CommentSection postId={post.id} />

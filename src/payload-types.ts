@@ -70,6 +70,7 @@ export interface Config {
     posts: Post;
     comments: Comment;
     'comment-likes': CommentLike;
+    messages: Message;
     'post-views': PostView;
     media: Media;
     users: User;
@@ -84,6 +85,7 @@ export interface Config {
     posts: PostsSelect<false> | PostsSelect<true>;
     comments: CommentsSelect<false> | CommentsSelect<true>;
     'comment-likes': CommentLikesSelect<false> | CommentLikesSelect<true>;
+    messages: MessagesSelect<false> | MessagesSelect<true>;
     'post-views': PostViewsSelect<false> | PostViewsSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
@@ -218,6 +220,31 @@ export interface CommentLike {
   id: string;
   comment: string | Comment;
   voter: string;
+  ipHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Private messages from readers. Each one is also emailed to you; reply to that email, or fill in Your reply here and the reader gets it by email.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages".
+ */
+export interface Message {
+  id: string;
+  status: 'new' | 'read' | 'replied' | 'spam';
+  post?: (string | null) | Post;
+  name: string;
+  email: string;
+  body: string;
+  /**
+   * Optional. The first time you save a reply, the reader gets it by email. Editing it afterwards doesn't email them again.
+   */
+  reply?: string | null;
+  repliedAt?: string | null;
+  /**
+   * Hashed IP address, used to rate-limit the message form.
+   */
   ipHash?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -428,6 +455,10 @@ export interface PayloadLockedDocument {
         value: string | CommentLike;
       } | null)
     | ({
+        relationTo: 'messages';
+        value: string | Message;
+      } | null)
+    | ({
         relationTo: 'post-views';
         value: string | PostView;
       } | null)
@@ -526,6 +557,22 @@ export interface CommentsSelect<T extends boolean = true> {
 export interface CommentLikesSelect<T extends boolean = true> {
   comment?: T;
   voter?: T;
+  ipHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "messages_select".
+ */
+export interface MessagesSelect<T extends boolean = true> {
+  status?: T;
+  post?: T;
+  name?: T;
+  email?: T;
+  body?: T;
+  reply?: T;
+  repliedAt?: T;
   ipHash?: T;
   updatedAt?: T;
   createdAt?: T;

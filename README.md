@@ -131,6 +131,16 @@ you've verified there (its DNS records must show **Verified**), and reply emails
 that too. If emails don't arrive, check Vercel → Logs for "Couldn't send" or "Couldn't email",
 which carry Resend's reason.
 
+### Private messages
+
+Under each post, next to the share links, readers can **Message Abubakar privately**. They give a name, an email and a message. Nothing is shown on the site.
+
+- Each message is emailed to `COMMENT_NOTIFY_EMAIL`, with the reader as reply-to, so you can answer straight from your inbox.
+- Every message is also kept in the admin under **Blog → Messages**, and the dashboard shows a banner while any are **New**. Saving a message moves it to **Read**.
+- To reply from the admin, fill in **Your reply** and save. The reader gets it by email (only the first time), and the message is marked **Replied**.
+- The form uses the same bot checks as comments, and allows 3 messages an hour per connection. Mark junk as **Spam** or delete it.
+- The form is hidden while you're signed in to the admin.
+
 ### Article views
 
 The admin dashboard (`/admin`) opens with **Article views**: totals for today, 7 days, 30 days and
